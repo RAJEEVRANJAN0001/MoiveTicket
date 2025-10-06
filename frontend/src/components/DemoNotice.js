@@ -23,7 +23,7 @@ const DemoNotice = () => {
             Demo Mode Active
           </h3>
           <p className="text-xs text-blue-200/80 mb-3">
-            This is a demonstration version using mock data. All functionality works normally for testing purposes.
+            This is a demonstration version using real movie data from OMDB API with mock booking functionality.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
             <div className="flex items-center space-x-2">

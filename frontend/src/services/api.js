@@ -159,6 +159,61 @@ class ApiService {
   }
 
   async mockGetMovies() {
+    // Try to fetch real movies from OMDB API
+    if (process.env.REACT_APP_OMDB_API_KEY && process.env.REACT_APP_OMDB_API_KEY !== 'your_omdb_api_key_here') {
+      try {
+        const popularMovies = [
+          'Avengers: Endgame',
+          'The Dark Knight',
+          'Inception',
+          'Interstellar',
+          'The Matrix',
+          'Spider-Man: No Way Home',
+          'Top Gun: Maverick',
+          'Avatar: The Way of Water'
+        ];
+
+        const moviePromises = popularMovies.slice(0, 6).map(async (title, index) => {
+          try {
+            const response = await fetch(
+              `https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
+            );
+            const movieData = await response.json();
+            
+            if (movieData.Response === 'True') {
+              return {
+                id: index + 1,
+                title: movieData.Title,
+                genre: movieData.Genre?.split(',')[0] || 'Action',
+                duration: movieData.Runtime ? parseInt(movieData.Runtime) : 120,
+                rating: movieData.Rated || 'PG-13',
+                description: movieData.Plot || 'A thrilling movie experience.',
+                poster_url: movieData.Poster !== 'N/A' ? movieData.Poster : `https://via.placeholder.com/300x450/1a1a1a/ffffff?text=${encodeURIComponent(movieData.Title)}`,
+                year: movieData.Year,
+                director: movieData.Director,
+                actors: movieData.Actors,
+                imdbRating: movieData.imdbRating
+              };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error fetching movie ${title}:`, error);
+            return null;
+          }
+        });
+
+        const movies = await Promise.all(moviePromises);
+        const validMovies = movies.filter(movie => movie !== null);
+        
+        if (validMovies.length > 0) {
+          return { data: { results: validMovies } };
+        }
+      } catch (error) {
+        console.error('Error fetching movies from OMDB:', error);
+      }
+    }
+
+    // Fallback to demo movies if OMDB fails or no API key
     const mockMovies = [
       {
         id: 1,
