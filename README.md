@@ -1,403 +1,178 @@
-# 🎬 Movie Ticket Booking System
+# 🎬 Movie Ticket Booking — Fullstack Demo
 
-A complete Django REST Framework-based movie ticket booking system with JWT authentication, Swagger documentation, and comprehensive booking management.
+This repository contains a fullstack movie ticket booking demo: a Django REST backend and a React frontend. It supports JWT authentication, seat booking (mock or real), booking cancellation, and a demo mode for frontend-only deployments.
 
-## 🚀 Features
+This README focuses on how to run the project locally (backend + frontend), how to build the frontend for production, and notes about the demo configuration used for deploying without a live backend.
 
-- **User Authentication**: JWT-based signup/login system
-- **Movie Management**: Complete CRUD operations for movies (Admin only)
-- **Show Management**: Schedule shows with seat management (Admin only)
-- **Seat Booking**: Real-time seat booking with conflict prevention and retry logic
-- **Booking Management**: View and cancel bookings
-- **Admin Interface**: Django admin for system management
-- **API Documentation**: Interactive Swagger/OpenAPI documentation
-- **Concurrent Booking Safety**: Database-level constraint handling with retry mechanism
+---
 
-## 🛠 Tech Stack
+## Quick Links
 
-- **Backend**: Python 3.10+, Django 4.2+
-- **API Framework**: Django REST Framework 3.14+
-- **Authentication**: JWT (djangorestframework-simplejwt)
-- **Documentation**: drf-yasg (Swagger/OpenAPI)
-- **Database**: SQLite (development), PostgreSQL (production)
-- **CORS**: django-cors-headers
+- Backend: `backend/` (Django + DRF)
+- Frontend: `frontend/` (React)
+- Demo & deployment notes: environment variables and `frontend/.env.production`
 
-## 📋 Prerequisites
+---
 
-- Python 3.10 or higher
-- pip (Python package manager)
-- Virtual environment (recommended)
+## Features
 
-## 🔧 Installation & Setup
+- JWT-based authentication (signup/login)
+- Movie CRUD (admin only)
+- Show scheduling and seat pricing
+- Seat booking with simple conflict handling (DB-level checks in backend)
+- View and cancel bookings
+- Optional frontend-only demo mode (no backend required) that uses OMDB for movie posters/titles
 
-### 1. Clone the Repository
+## Tech stack
 
-```bash
-git clone <repository-url>
-cd movie_booking_project
-```
+- Backend: Python, Django, Django REST Framework
+- Frontend: React (Create React App), Axios, Zustand, Tailwind CSS
+- DB: SQLite for development (Postgres recommended for production)
 
-### 2. Create Virtual Environment
+## Prerequisites
+
+- Node.js and npm (for frontend)
+- Python 3.10+ and pip (for backend)
+
+## Local development — Backend (quick)
+
+1. Create and activate a Python virtualenv
 
 ```bash
 python -m venv venv
-
-# On Windows
-venv\Scripts\activate
-
-# On macOS/Linux
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+2. Install dependencies and migrate
 
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-### 4. Database Setup
-
-```bash
 python manage.py migrate
-python manage.py createsuperuser  # Create admin user
-python manage.py populate_data     # Load sample data
+python manage.py createsuperuser  # optional
+python manage.py populate_data     # optional sample data command (if present)
 ```
 
-### 5. Run the Server
+3. Run the backend
 
 ```bash
 python manage.py runserver
 ```
 
-The API will be available at `http://127.0.0.1:8000/`
-Swagger documentation at `http://127.0.0.1:8000/swagger/`
+API base: http://127.0.0.1:8000/
 
-## 📚 API Documentation
+Swagger UI (if enabled): http://127.0.0.1:8000/swagger/
 
-**Base URL**: `http://127.0.0.1:8000/api/`
+## Local development — Frontend (quick)
 
-**Note**: All endpoints are prefixed with `/api/`
-
-### Authentication Endpoints
-
-#### Register User
-```bash
-POST /api/signup/
-Content-Type: application/json
-
-{
-    "username": "testuser",
-    "email": "test@example.com",
-    "password": "securepassword123",
-    "password_confirm": "securepassword123",
-    "first_name": "Test",
-    "last_name": "User"
-}
-```
-
-#### Login User
-```bash
-POST /api/login/
-Content-Type: application/json
-
-{
-    "username": "testuser",
-    "password": "securepassword123"
-}
-```
-
-**Response:**
-```json
-{
-    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-    "user": {
-        "id": 1,
-        "username": "testuser",
-        "email": "test@example.com"
-    }
-}
-```
-
-### Movie Endpoints
-
-#### Get All Movies
-```bash
-GET /api/movies/
-# No authentication required
-```
-
-#### Get Movie Shows
-```bash
-GET /api/movies/{movie_id}/shows/
-# No authentication required
-```
-
-### Booking Endpoints (Require JWT Authentication)
-
-#### Book a Seat
-```bash
-POST /api/shows/{show_id}/book/
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-    "seat_number": 5
-}
-```
-
-#### Get My Bookings
-```bash
-GET /api/my-bookings/
-Authorization: Bearer {access_token}
-```
-
-#### Cancel Booking
-```bash
-POST /api/bookings/{booking_id}/cancel/
-Authorization: Bearer {access_token}
-```
-
-### Example curl Commands
+1. Install frontend dependencies
 
 ```bash
-# 1. Register a user
-curl -X POST http://127.0.0.1:8000/api/signup/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "moviefan",
-    "email": "fan@movies.com",
-    "password": "securepass123",
-    "password_confirm": "securepass123",
-    "first_name": "Movie",
-    "last_name": "Fan"
-  }'
-
-# 2. Login and get token
-curl -X POST http://127.0.0.1:8000/api/login/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "moviefan",
-    "password": "securepass123"
-  }'
-
-# 3. Get all movies (no auth needed)
-curl http://127.0.0.1:8000/api/movies/
-
-# 4. Book a seat (replace TOKEN with actual access token)
-curl -X POST http://127.0.0.1:8000/api/shows/1/book/ \
-  -H "Authorization: Bearer TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"seat_number": 5}'
-
-# 5. View my bookings
-curl http://127.0.0.1:8000/api/my-bookings/ \
-  -H "Authorization: Bearer TOKEN"
+cd frontend
+npm install
 ```
 
-### 3. Install Dependencies
+2. Development server
 
 ```bash
-pip install -r requirements.txt
+npm start
 ```
 
-### 4. Database Setup
+The React app will run on http://localhost:3000 by default.
+
+## Frontend environment variables
+
+Create a `.env` (for local dev) or use `.env.production` for production builds. Important variables used in the frontend:
+
+- `REACT_APP_API_BASE_URL` — backend API base (e.g. `http://127.0.0.1:8000/api`)
+- `REACT_APP_DEMO_MODE` — set to `true` to run the frontend in demo/mock mode (no backend required)
+- `REACT_APP_OMDB_API_KEY` — optional OMDB API key to fetch real movie posters/titles in demo mode
+
+Example `.env` snippet:
+
+```env
+REACT_APP_API_BASE_URL=http://127.0.0.1:8000/api
+REACT_APP_DEMO_MODE=false
+REACT_APP_OMDB_API_KEY=b48416e9
+```
+
+Notes:
+- When `REACT_APP_DEMO_MODE=true` the frontend uses mock endpoints and can be deployed without the backend.
+- OMDB key is optional; if set, demo mode will fetch richer movie metadata.
+
+## Build & Production (frontend)
+
+Build the frontend for production:
 
 ```bash
-# Create and apply migrations
-python manage.py makemigrations
-python manage.py migrate
-
-# Create superuser (optional)
-python manage.py createsuperuser
+cd frontend
+npm run build
 ```
 
-### 5. Load Sample Data (Optional)
+This produces a `build/` folder ready to serve as static files. The project already includes a `vercel.json` to support SPA routing when deploying to Vercel.
 
-```bash
-python manage.py shell
-```
+## Deploying to Vercel (recommended for frontend-only demo)
 
-```python
-# Inside Django shell
-from movies.models import Movie, Show
-from django.utils import timezone
-from datetime import timedelta
+1. Set `REACT_APP_DEMO_MODE=true` in the Vercel project environment variables (or commit a `.env.production` with that value — not recommended for secrets).
+2. (Optional) Set `REACT_APP_OMDB_API_KEY` in Vercel env if you want real posters.
+3. Push to your Git provider and link the repo to Vercel. The included `vercel.json` routes should ensure client-side routing works.
 
-# Create sample movies
-movie1 = Movie.objects.create(
-    title="Avengers: Endgame",
-    duration_minutes=181,
-    genre="Action",
-    rating=8.4,
-    description="The Avengers assemble once more to reverse Thanos' actions."
-)
+## API examples (backend)
 
-movie2 = Movie.objects.create(
-    title="The Dark Knight",
-    duration_minutes=152,
-    genre="Action",
-    rating=9.0,
-    description="Batman faces his greatest psychological and physical tests."
-)
-
-# Create sample shows
-Show.objects.create(
-    movie=movie1,
-    screen_name="IMAX Screen 1",
-    date_time=timezone.now() + timedelta(days=1),
-    total_seats=100,
-    price=350.00
-)
-
-Show.objects.create(
-    movie=movie2,
-    screen_name="Premium Screen 2",
-    date_time=timezone.now() + timedelta(days=2),
-    total_seats=80,
-    price=300.00
-)
-```
-
-### 6. Run the Development Server
-
-```bash
-python manage.py runserver
-```
-
-The API will be available at: `http://127.0.0.1:8000/`
-
-## 📚 API Documentation
-
-Access the interactive Swagger documentation at:
-- **Swagger UI**: http://127.0.0.1:8000/swagger/
-- **ReDoc**: http://127.0.0.1:8000/redoc/
-
-## 🔑 API Endpoints
-
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/signup/` | Register a new user |
-| POST | `/api/login/` | Login and get JWT tokens |
-
-### Movies
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/movies/` | List all movies |
-| POST | `/api/movies/` | Create a new movie |
-| GET | `/api/movies/{id}/` | Get movie details |
-| PUT | `/api/movies/{id}/` | Update movie |
-| DELETE | `/api/movies/{id}/` | Delete movie |
-| GET | `/api/movies/{id}/shows/` | Get shows for a movie |
-
-### Shows
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/shows/` | List all shows |
-| POST | `/api/shows/` | Create a new show |
-
-### Bookings
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/shows/{id}/book/` | Book a seat |
-| POST | `/api/bookings/{id}/cancel/` | Cancel a booking |
-| GET | `/api/my-bookings/` | Get user's bookings |
-
-### User Profile
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/profile/` | Get user profile |
-| PUT | `/api/profile/` | Update user profile |
-
-## 🔐 Authentication Usage
-
-### 1. Register a User
+1. Register a user
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/signup/ \
   -H "Content-Type: application/json" \
-  -d '{
-    "username": "testuser",
-    "email": "test@example.com",
-    "password": "securepass123",
-    "password_confirm": "securepass123",
-    "first_name": "Test",
-    "last_name": "User"
-  }'
+  -d '{"username":"moviefan","email":"fan@movies.com","password":"securepass123","password_confirm":"securepass123"}'
 ```
 
-### 2. Login and Get JWT Token
+2. Login
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/login/ \
   -H "Content-Type: application/json" \
-  -d '{
-    "username": "testuser",
-    "password": "securepass123"
-  }'
+  -d '{"username":"moviefan","password":"securepass123"}'
 ```
 
-Response:
-```json
-{
-  "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "user": {
-    "id": 1,
-    "username": "testuser",
-    "email": "test@example.com"
-  }
-}
-```
-
-### 3. Use Token for Authenticated Requests
+3. Book a seat (authenticated)
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/shows/1/book/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -d '{"seat_number": 5}'
 ```
 
-## 📝 API Usage Examples
-
-### Book a Seat
+4. Get my bookings
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/shows/1/book/ \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -d '{"seat_number": 15}'
+curl -H "Authorization: Bearer <ACCESS_TOKEN>" http://127.0.0.1:8000/api/my-bookings/
 ```
 
-Response:
-```json
-{
-  "message": "Seat booked successfully",
-  "booking_id": 1,
-  "seat_number": 15,
-  "show_id": 1,
-  "movie_title": "Avengers: Endgame",
-  "show_datetime": "2023-12-25T19:00:00Z",
-  "screen_name": "IMAX Screen 1"
-}
-```
+## Troubleshooting
 
-### Cancel a Booking
+- If frontend signup shows "Signup failed", confirm `REACT_APP_API_BASE_URL` is set correctly and the backend is reachable.
+- For odd currency/price issues, ensure the frontend `helpers` utilities haven't been modified to apply unexpected conversions.
+- If deploying frontend-only, enable `REACT_APP_DEMO_MODE=true`. The app will use mock endpoints and will work without the backend.
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/bookings/1/cancel/ \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
+## Contributing & notes
 
-### Get User's Bookings
+- This repo contains both frontend and backend code. Please open PRs against `main`.
+- Add unit tests where possible and keep API contract changes coordinated between frontend and backend.
 
-```bash
-curl -X GET http://127.0.0.1:8000/api/my-bookings/ \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
+## License
+
+This project includes a `LICENSE` file at the repo root. Follow the license terms for reuse.
+
+---
+
+If you'd like, I can also:
+
+- Add a short `frontend/README.md` with dev and build steps specific to the React app
+- Add a `Makefile` or scripts to start both services together (devproxy)
+
+Tell me which you'd prefer next and I will implement it.
 
 ## Reviewer Mapping (one-page)
 
