@@ -1,0 +1,2 @@
+# MoiveTicket
+Full-stack Movie Ticket Booking app with a Django REST backend (JWT auth, Swagger) and a React + Material-UI frontend. Users can browse movies and theaters, view show details, select seats with an interactive selector, and complete bookings/payments. Admin tools and seeded data let you manage movies, shows, and bookings; the backend integrates with OMDB for movie metadata. Set up for local development (SQLite, Django manage.py, npm) — ideal for demos or as a foundation for production upgrades.
