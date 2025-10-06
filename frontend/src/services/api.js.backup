@@ -9,15 +9,9 @@ const API_BASE_URL = getApiUrl();
 
 class ApiService {
   constructor() {
-    // Check if demo mode is enabled
-    this.useMockData = process.env.REACT_APP_DEMO_MODE === 'true';
+    this.useMockData = false;
     this.backendTested = false;
-    
-    if (!this.useMockData) {
-      this.initializeApi();
-    } else {
-      console.log('Demo mode enabled - using mock data');
-    }
+    this.initializeApi();
   }
 
   initializeApi() {
@@ -229,6 +223,7 @@ class ApiService {
       }
     ];
     return { data: { results: mockBookings } };
+  }
   }
 
   setAuthToken(token) {

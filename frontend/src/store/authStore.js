@@ -11,20 +11,27 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await apiService.login(credentials);
-      const { access, user } = response.data;
       
-      localStorage.setItem('auth-token', access);
+      // Handle both real API and mock data responses
+      const token = response.data.access || response.data.token;
+      const user = response.data.user;
+      
+      if (!token || !user) {
+        throw new Error('Invalid response format');
+      }
+      
+      localStorage.setItem('auth-token', token);
       localStorage.setItem('user-data', JSON.stringify(user));
       
       set({
         user,
-        token: access,
+        token: token,
         isAuthenticated: true,
         isLoading: false,
       });
       
       // Set the token for future API calls
-      apiService.setAuthToken(access);
+      apiService.setAuthToken(token);
       
       return { success: true, data: response.data };
     } catch (error) {
@@ -34,6 +41,7 @@ const useAuthStore = create((set, get) => ({
         success: false, 
         error: error.response?.data?.non_field_errors?.[0] || 
                error.response?.data?.detail || 
+               error.message ||
                'Login failed. Please check your credentials.' 
       };
     }
@@ -43,14 +51,35 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await apiService.signup(userData);
-      set({ isLoading: false });
+      
+      // Handle both real API and mock data responses
+      const token = response.data.access || response.data.token;
+      const user = response.data.user;
+      
+      if (token && user) {
+        // Auto-login after successful signup (for mock data)
+        localStorage.setItem('auth-token', token);
+        localStorage.setItem('user-data', JSON.stringify(user));
+        
+        set({
+          user,
+          token: token,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        
+        apiService.setAuthToken(token);
+      } else {
+        set({ isLoading: false });
+      }
+      
       return { success: true, data: response.data };
     } catch (error) {
       set({ isLoading: false });
       console.error('Signup error:', error.response?.data || error.message);
       return { 
         success: false, 
-        error: error.response?.data || 'Signup failed. Please try again.' 
+        error: error.response?.data || error.message || 'Signup failed. Please try again.' 
       };
     }
   },

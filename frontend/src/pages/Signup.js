@@ -48,8 +48,16 @@ const Signup = () => {
     const result = await signup(formData);
     
     if (result.success) {
-      toast.success('Account created successfully! Please log in.');
-      navigate('/login');
+      // Check if user was auto-logged in (mock data scenario)
+      const { isAuthenticated } = useAuthStore.getState();
+      
+      if (isAuthenticated) {
+        toast.success('Account created successfully! You are now logged in.');
+        navigate('/');
+      } else {
+        toast.success('Account created successfully! Please log in.');
+        navigate('/login');
+      }
     } else {
       // Handle validation errors from backend
       if (typeof result.error === 'object') {
@@ -66,7 +74,7 @@ const Signup = () => {
           }
         });
       } else {
-        toast.error(result.error || 'Signup failed');
+        toast.error(result.error || 'Signup failed. Please try again.');
       }
     }
   };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Film, ArrowRight, Ticket, Clock, Users } from 'lucide-react';
+import DemoNotice from '../components/DemoNotice';
 
 const Home = () => {
   const features = [
@@ -50,6 +51,8 @@ const Home = () => {
           className="py-20 text-center"
         >
           <div className="max-w-4xl mx-auto px-4">
+            <DemoNotice />
+            
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
