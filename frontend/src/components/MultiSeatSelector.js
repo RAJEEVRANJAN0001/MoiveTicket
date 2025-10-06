@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { formatAmount } from '../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Minus, Plus, X } from 'lucide-react';

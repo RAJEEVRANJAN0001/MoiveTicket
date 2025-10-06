@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Users, ArrowLeft, Star } from 'lucide-react';
+import { Calendar, Users, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiService from '../services/api';
 import movieDataService from '../services/movieData';
 import useAuthStore from '../store/authStore';
 import MovieHero from '../components/MovieHero';
 import MultiSeatSelector from '../components/MultiSeatSelector';
-import { formatDateTime, formatDuration } from '../utils/helpers';
+import { formatDateTime } from '../utils/helpers';
 
 const ShowDetails = () => {
   const { movieId } = useParams();
@@ -24,9 +24,9 @@ const ShowDetails = () => {
 
   useEffect(() => {
     fetchMovieShows();
-  }, [movieId]);
+  }, [fetchMovieShows]);
 
-  const fetchMovieShows = async () => {
+  const fetchMovieShows = useCallback(async () => {
     try {
       const [moviesResponse, showsResponse] = await Promise.all([
         apiService.getMovies(),
@@ -54,7 +54,7 @@ const ShowDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [movieId]);
 
   const handleShowSelect = (show) => {
     setSelectedShow(show);
@@ -80,7 +80,7 @@ const ShowDetails = () => {
     setBookingLoading(true);
     try {
       // Use the enhanced API service for multiple seat booking
-      const response = await apiService.bookMultipleSeats(selectedShow.id, selectedSeats);
+      await apiService.bookMultipleSeats(selectedShow.id, selectedSeats);
       toast.success(`${selectedSeats.length} seat(s) booked successfully!`);
       
       // Refresh show data to update available seats

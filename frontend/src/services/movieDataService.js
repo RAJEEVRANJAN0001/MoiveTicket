@@ -182,7 +182,6 @@ class MovieDataService {
   // Generate poster URL from movie title (fallback)
   generatePosterUrl(movieTitle) {
     // Use a service like TheMovieDB or create a placeholder
-    const cleanTitle = movieTitle.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '+');
     return `https://via.placeholder.com/300x450/1a1a1a/ffffff?text=${encodeURIComponent(movieTitle)}`;
   }
 
