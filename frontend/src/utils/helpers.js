@@ -68,8 +68,8 @@ export const formatCurrency = (amount) => {
 export const formatAmount = (amount) => {
   if (!amount && amount !== 0) return '₹0';
   
-  // Convert USD to INR
-  const inrAmount = typeof amount === 'string' ? parseFloat(amount) * 83 : amount * 83;
+  // Amount is already in INR, no conversion needed
+  const inrAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
   
   return `₹${Math.round(inrAmount).toLocaleString('en-IN')}`;
 };
@@ -100,8 +100,14 @@ export const generateSeatLayout = (rows = 10, seatsPerRow = 16) => {
   return layout;
 };
 
-export const calculateTotalPrice = (selectedSeats) => {
-  return selectedSeats.reduce((total, seat) => total + seat.price, 0);
+export const calculateTotalPrice = (selectedSeats, defaultPrice = 250) => {
+  if (!selectedSeats || selectedSeats.length === 0) return 0;
+  
+  return selectedSeats.reduce((total, seat) => {
+    // If seat has its own price, use it; otherwise use default price
+    const seatPrice = seat.price || defaultPrice;
+    return total + seatPrice;
+  }, 0);
 };
 
 export const formatSeatNumbers = (seats) => {

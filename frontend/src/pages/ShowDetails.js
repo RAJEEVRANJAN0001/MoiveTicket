@@ -176,9 +176,9 @@ const ShowDetails = () => {
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{show.screen_name}</h3>
+                    <h3 className="text-lg font-semibold text-white">{show.theater}</h3>
                     <span className="text-2xl font-bold text-primary-500">
-                      ${show.price}
+                      ₹{show.price}
                     </span>
                   </div>
                   

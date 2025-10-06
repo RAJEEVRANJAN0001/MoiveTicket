@@ -243,18 +243,26 @@ class ApiService {
       {
         id: 1,
         movie: parseInt(movieId),
-        theater: "Demo Theater 1",
+        theater: "PVR Cinemas - Gold Class",
         showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-        price: 12.50,
+        price: 450,
         available_seats: 50
       },
       {
         id: 2,
         movie: parseInt(movieId),
-        theater: "Demo Theater 2", 
+        theater: "INOX Premium", 
         showtime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
-        price: 15.00,
+        price: 350,
         available_seats: 30
+      },
+      {
+        id: 3,
+        movie: parseInt(movieId),
+        theater: "Multiplex Standard", 
+        showtime: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+        price: 250,
+        available_seats: 75
       }
     ];
     return { data: { results: mockShows } };
@@ -376,17 +384,17 @@ class ApiService {
         {
           id: 1,
           movie: parseInt(movieId),
-          theater: "Demo Theater 1",
+          theater: "PVR Cinemas - Gold Class",
           showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-          price: 12.50,
+          price: 450,
           available_seats: 50
         },
         {
           id: 2,
           movie: parseInt(movieId),
-          theater: "Demo Theater 2",
+          theater: "INOX Premium",
           showtime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(), // 5 hours from now
-          price: 15.00,
+          price: 350,
           available_seats: 30
         }
       ];
@@ -483,9 +491,9 @@ class ApiService {
         {
           id: 1,
           movie_title: "Demo Movie 1",
-          theater: "Demo Theater 1",
+          theater: "PVR Cinemas - Gold Class",
           showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-          price: 12.50,
+          price: 450,
           available_seats: 50
         }
       ];
