@@ -280,15 +280,65 @@ class ApiService {
   }
 
   async mockGetMyBookings() {
+    // Get real movie titles from our movie list
+    const moviesResponse = await this.mockGetMovies();
+    const movies = moviesResponse.data.results;
+    
+    // Create realistic bookings with real movie data
     const mockBookings = [
       {
         id: 1,
-        movie_title: "Demo Movie 1",
-        theater: "Demo Theater 1",
-        showtime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        seat_number: "A1",
-        booking_time: new Date().toISOString(),
-        status: "confirmed"
+        bookingId: "BK" + Date.now().toString().slice(-6),
+        movie_title: movies[0]?.title || "Avengers: Endgame",
+        theater: {
+          name: "PVR Cinemas - Gold Class"
+        },
+        screen_name: "PVR Cinemas - Gold Class",
+        showTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('en-IN', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        show_datetime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        seat_number: "B7",
+        selectedSeats: [{ id: "B7", price: 450 }],
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        booking_time: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        status: "confirmed",
+        price: 450,
+        total_amount: 450,
+        screen: "Screen 1"
+      },
+      {
+        id: 2,
+        bookingId: "BK" + (Date.now() - 1000).toString().slice(-6),
+        movie_title: movies[1]?.title || "The Dark Knight",
+        theater: {
+          name: "INOX Premium"
+        },
+        screen_name: "INOX Premium",
+        showTime: new Date(Date.now() + 72 * 60 * 60 * 1000).toLocaleString('en-IN', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        show_datetime: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+        seat_number: "C6",
+        selectedSeats: [{ id: "C6", price: 350 }],
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        booking_time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        status: "confirmed",
+        price: 350,
+        total_amount: 350,
+        screen: "Screen 2"
       }
     ];
     return { data: { results: mockBookings } };
@@ -461,18 +511,7 @@ class ApiService {
 
   async getMyBookings() {
     if (this.useMockData) {
-      const mockBookings = [
-        {
-          id: 1,
-          movie_title: "Demo Movie 1",
-          theater: "Demo Theater 1",
-          showtime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-          seat_number: "A1",
-          booking_time: new Date().toISOString(),
-          status: "confirmed"
-        }
-      ];
-      return this.getMockResponse({ results: mockBookings });
+      return this.mockGetMyBookings();
     }
     return this.api.get('/my-bookings/');
   }
@@ -490,7 +529,7 @@ class ApiService {
       const mockShows = [
         {
           id: 1,
-          movie_title: "Demo Movie 1",
+          movie_title: "Avengers: Endgame",
           theater: "PVR Cinemas - Gold Class",
           showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
           price: 450,
