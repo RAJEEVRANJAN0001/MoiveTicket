@@ -272,7 +272,7 @@ Enjoy your movie! 🍿
         </button>
 
         {/* Cancel Booking Button */}
-        {booking.status === 'booked' && (
+        {(booking.status === 'booked' || booking.status === 'confirmed') && (
           <button
             onClick={() => handleCancelBooking(booking.id || booking.bookingId)}
             disabled={cancellingId === (booking.id || booking.bookingId)}
