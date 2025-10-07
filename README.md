@@ -93,7 +93,7 @@ Example `.env` snippet:
 ```env
 REACT_APP_API_BASE_URL=http://127.0.0.1:8000/api
 REACT_APP_DEMO_MODE=false
-REACT_APP_OMDB_API_KEY=b48416e9
+REACT_APP_OMDB_API_KEY=______________
 ```
 
 Notes:
