@@ -213,9 +213,37 @@ class ApiService {
       }
     }
 
-    // Fallback to empty movies list if OMDB fails or no API key
-    // Avoid shipping demo titles in production builds.
-    const mockMovies = [];
+    // Fallback to sample movies if OMDB fails or no API key
+    // Using real movie titles to avoid demo placeholders
+    const mockMovies = [
+      {
+        id: 1,
+        title: "Avengers: Endgame",
+        genre: "Action",
+        duration: 181,
+        rating: "PG-13",
+        description: "The Avengers assemble once more to reverse Thanos actions and save the universe.",
+        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Avengers"
+      },
+      {
+        id: 2,
+        title: "The Dark Knight",
+        genre: "Action",
+        duration: 152,
+        rating: "PG-13",
+        description: "Batman faces his greatest psychological and physical tests when the Joker wreaks havoc.",
+        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Batman"
+      },
+      {
+        id: 3,
+        title: "Inception",
+        genre: "Sci-Fi",
+        duration: 148,
+        rating: "PG-13",
+        description: "A thief who steals corporate secrets through dream-sharing technology.",
+        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Inception"
+      }
+    ];
     return { data: { results: mockMovies } };
   }
 
@@ -225,26 +253,35 @@ class ApiService {
       {
         id: 1,
         movie: parseInt(movieId),
-        theater: "PVR Cinemas - Gold Class",
-        showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-        price: 450,
-        available_seats: 50
+        movie_title: "Sample Movie",
+        screen_name: "Starlight Cinema - IMAX Screen 1",
+        date_time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+        price: 450.00,
+        total_seats: 100,
+        available_seats: 50,
+        booked_seat_numbers: []
       },
       {
         id: 2,
         movie: parseInt(movieId),
-        theater: "INOX Premium", 
-        showtime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
-        price: 350,
-        available_seats: 30
+        movie_title: "Sample Movie",
+        screen_name: "Starlight Cinema - Premium Screen 2", 
+        date_time: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
+        price: 350.00,
+        total_seats: 80,
+        available_seats: 30,
+        booked_seat_numbers: []
       },
       {
         id: 3,
         movie: parseInt(movieId),
-        theater: "Multiplex Standard", 
-        showtime: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
-        price: 250,
-        available_seats: 75
+        movie_title: "Sample Movie",
+        screen_name: "Starlight Cinema - Standard Screen 3", 
+        date_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+        price: 250.00,
+        total_seats: 90,
+        available_seats: 75,
+        booked_seat_numbers: []
       }
     ];
     return { data: { results: mockShows } };
@@ -369,27 +406,9 @@ class ApiService {
   // Movie endpoints
   async getMovies() {
     if (this.useMockData) {
-      const mockMovies = [
-        {
-          id: 1,
-          title: "Demo Movie 1",
-          genre: "Action",
-          duration: 120,
-          rating: "PG-13",
-          description: "This is a demo movie for testing purposes.",
-          poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+1"
-        },
-        {
-          id: 2,
-          title: "Demo Movie 2",
-          genre: "Comedy",
-          duration: 105,
-          rating: "PG",
-          description: "Another demo movie for testing purposes.",
-          poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+2"
-        }
-      ];
-      return this.getMockResponse({ results: mockMovies });
+      // Reuse the same mock movies from mockGetMovies for consistency
+      const response = await this.mockGetMovies();
+      return this.getMockResponse(response.data);
     }
     return this.api.get('/movies/');
   }
@@ -400,18 +419,24 @@ class ApiService {
         {
           id: 1,
           movie: parseInt(movieId),
-          theater: "PVR Cinemas - Gold Class",
-          showtime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-          price: 450,
-          available_seats: 50
+          movie_title: "Sample Movie",
+          screen_name: "Starlight Cinema - IMAX Screen 1",
+          date_time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+          price: 450.00,
+          total_seats: 100,
+          available_seats: 50,
+          booked_seat_numbers: []
         },
         {
           id: 2,
           movie: parseInt(movieId),
-          theater: "INOX Premium",
-          showtime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(), // 5 hours from now
-          price: 350,
-          available_seats: 30
+          movie_title: "Sample Movie",
+          screen_name: "Starlight Cinema - Premium Screen 2",
+          date_time: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(), // 5 hours from now
+          price: 350.00,
+          total_seats: 80,
+          available_seats: 30,
+          booked_seat_numbers: []
         }
       ];
       return this.getMockResponse({ results: mockShows });
