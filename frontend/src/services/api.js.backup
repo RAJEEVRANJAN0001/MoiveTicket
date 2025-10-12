@@ -153,26 +153,8 @@ class ApiService {
   }
 
   async mockGetMovies() {
-    const mockMovies = [
-      {
-        id: 1,
-        title: "Demo Movie 1",
-        genre: "Action",
-        duration: 120,
-        rating: "PG-13",
-        description: "This is a demo movie for testing purposes.",
-        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+1"
-      },
-      {
-        id: 2,
-        title: "Demo Movie 2",
-        genre: "Comedy",
-        duration: 105,
-        rating: "PG",
-        description: "Another demo movie for testing purposes.",
-        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+2"
-      }
-    ];
+    // Fallback to empty list in backup/demo mode to avoid demo titles
+    const mockMovies = [];
     return { data: { results: mockMovies } };
   }
 
@@ -214,7 +196,7 @@ class ApiService {
     const mockBookings = [
       {
         id: 1,
-        movie_title: "Demo Movie 1",
+          movie_title: "Avengers: Endgame",
         theater: "Demo Theater 1",
         showtime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         seat_number: "A1",

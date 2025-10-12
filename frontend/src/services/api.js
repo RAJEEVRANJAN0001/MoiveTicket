@@ -213,27 +213,9 @@ class ApiService {
       }
     }
 
-    // Fallback to demo movies if OMDB fails or no API key
-    const mockMovies = [
-      {
-        id: 1,
-        title: "Demo Movie 1",
-        genre: "Action",
-        duration: 120,
-        rating: "PG-13",
-        description: "This is a demo movie for testing purposes.",
-        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+1"
-      },
-      {
-        id: 2,
-        title: "Demo Movie 2",
-        genre: "Comedy",
-        duration: 105,
-        rating: "PG",
-        description: "Another demo movie for testing purposes.",
-        poster_url: "https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Demo+Movie+2"
-      }
-    ];
+    // Fallback to empty movies list if OMDB fails or no API key
+    // Avoid shipping demo titles in production builds.
+    const mockMovies = [];
     return { data: { results: mockMovies } };
   }
 
@@ -280,28 +262,21 @@ class ApiService {
   }
 
   async mockGetMyBookings() {
-    // Get real movie titles from our movie list
+    // Get movie titles, if available, otherwise use sensible defaults
     const moviesResponse = await this.mockGetMovies();
-    const movies = moviesResponse.data.results;
-    
-    // Create realistic bookings with real movie data
+    const movies = moviesResponse.data.results || [];
+
+    const movieTitleOrDefault = (index, fallback) => movies[index]?.title || fallback;
+
+    // Create a small set of realistic mock bookings using safe defaults
     const mockBookings = [
       {
         id: 1,
         bookingId: "BK" + Date.now().toString().slice(-6),
-        movie_title: movies[0]?.title || "Avengers: Endgame",
-        theater: {
-          name: "PVR Cinemas - Gold Class"
-        },
+        movie_title: movieTitleOrDefault(0, "Avengers: Endgame"),
+        theater: { name: "PVR Cinemas - Gold Class" },
         screen_name: "PVR Cinemas - Gold Class",
-        showTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('en-IN', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
+        showTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('en-IN'),
         show_datetime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         seat_number: "B7",
         selectedSeats: [{ id: "B7", price: 450 }],
@@ -316,19 +291,10 @@ class ApiService {
       {
         id: 2,
         bookingId: "BK" + (Date.now() - 1000).toString().slice(-6),
-        movie_title: movies[1]?.title || "The Dark Knight",
-        theater: {
-          name: "INOX Premium"
-        },
+        movie_title: movieTitleOrDefault(1, "The Dark Knight"),
+        theater: { name: "INOX Premium" },
         screen_name: "INOX Premium",
-        showTime: new Date(Date.now() + 72 * 60 * 60 * 1000).toLocaleString('en-IN', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
+        showTime: new Date(Date.now() + 72 * 60 * 60 * 1000).toLocaleString('en-IN'),
         show_datetime: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
         seat_number: "C6",
         selectedSeats: [{ id: "C6", price: 350 }],
@@ -339,60 +305,6 @@ class ApiService {
         price: 350,
         total_amount: 350,
         screen: "Screen 2"
-      },
-      {
-        id: 3,
-        bookingId: "BK" + (Date.now() - 2000).toString().slice(-6),
-        movie_title: movies[2]?.title || "Inception",
-        theater: {
-          name: "Cinepolis DLF Mall"
-        },
-        screen_name: "Cinepolis DLF Mall",
-        showTime: new Date(Date.now() - 12 * 60 * 60 * 1000).toLocaleString('en-IN', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        show_datetime: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        seat_number: "D5",
-        selectedSeats: [{ id: "D5", price: 320 }],
-        createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
-        booking_time: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
-        status: "cancelled",
-        price: 320,
-        total_amount: 320,
-        screen: "Screen 3"
-      },
-      {
-        id: 4,
-        bookingId: "BK" + (Date.now() - 3000).toString().slice(-6),
-        movie_title: movies[3]?.title || "Pulp Fiction",
-        theater: {
-          name: "Miraj Cinemas Ansal Plaza"
-        },
-        screen_name: "Miraj Cinemas Ansal Plaza",
-        showTime: new Date(Date.now() + 120 * 60 * 60 * 1000).toLocaleString('en-IN', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        show_datetime: new Date(Date.now() + 120 * 60 * 60 * 1000).toISOString(),
-        seat_number: "E8",
-        selectedSeats: [{ id: "E8", price: 280 }],
-        createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-        booking_time: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-        status: "confirmed",
-        price: 280,
-        total_amount: 280,
-        screen: "Screen 1"
       }
     ];
     return { data: { results: mockBookings } };
