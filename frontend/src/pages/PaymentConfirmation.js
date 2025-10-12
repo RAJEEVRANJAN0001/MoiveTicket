@@ -29,11 +29,22 @@ const PaymentConfirmation = () => {
   const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
-    const storedBooking = localStorage.getItem('finalBooking');
+    const storedBooking = localStorage.getItem('currentBooking');
     if (storedBooking) {
-      setBookingData(JSON.parse(storedBooking));
+      const booking = JSON.parse(storedBooking);
+      // Add booking ID if it doesn't exist
+      if (!booking.bookingId) {
+        booking.bookingId = 'BK' + Date.now().toString().slice(-6);
+      }
+      setBookingData(booking);
     } else {
-      navigate('/movies');
+      // Also check for finalBooking as fallback
+      const finalBooking = localStorage.getItem('finalBooking');
+      if (finalBooking) {
+        setBookingData(JSON.parse(finalBooking));
+      } else {
+        navigate('/movies');
+      }
     }
   }, [navigate]);
 
@@ -43,12 +54,28 @@ const PaymentConfirmation = () => {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 3000));
     
+    // Save booking to localStorage for My Bookings page
+    const savedBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+    const newBooking = {
+      ...bookingData,
+      id: bookingData.bookingId,
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      booking_time: new Date().toISOString(),
+      seat_number: bookingData.selectedSeats.map(seat => seat.id).join(', '),
+      screen: bookingData.theater.name
+    };
+    
+    savedBookings.push(newBooking);
+    localStorage.setItem('userBookings', JSON.stringify(savedBookings));
+    
     setPaymentProcessing(false);
     setPaymentComplete(true);
     
-    toast.success('Payment successful! Booking confirmed.');
+    toast.success('Payment successful! Booking confirmed and saved to My Bookings.');
     
-    // Clear booking data
+    // Clear current booking data but keep saved bookings
     localStorage.removeItem('currentBooking');
     localStorage.removeItem('finalBooking');
   };

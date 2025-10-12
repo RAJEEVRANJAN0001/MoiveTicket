@@ -195,13 +195,34 @@ const ShowDetails = () => {
 
     setBookingLoading(true);
     try {
+      // Store booking data for payment page
+      const bookingData = {
+        movieId: movie.id,
+        movieTitle: movie.title,
+        showId: selectedShow.id,
+        showTime: selectedShow.date_time,
+        theater: {
+          name: selectedShow.screen_name,
+          location: "Cinema Location",
+          totalSeats: selectedShow.total_seats
+        },
+        price: selectedShow.price,
+        selectedSeats: selectedSeats.map(seat => ({
+          id: seat,
+          price: selectedShow.price
+        })),
+        totalAmount: selectedSeats.length * selectedShow.price,
+        bookingTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+      
       // Use the enhanced API service for multiple seat booking
       await apiService.bookMultipleSeats(selectedShow.id, selectedSeats);
-      toast.success(`${selectedSeats.length} seat(s) booked successfully!`);
       
-      // Refresh show data to update available seats
-      await fetchMovieShows();
-      setSelectedSeats([]);
+      // Navigate to payment confirmation page instead of staying on same page
+      navigate('/booking/payment');
+      
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Failed to book seats';
       toast.error(errorMessage);
