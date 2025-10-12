@@ -9,7 +9,7 @@ const API_BASE_URL = getApiUrl();
 
 class ApiService {
   constructor() {
-    // Check if demo mode is enabled
+    // Check if demo mode is enabled or force mock data for better demo experience
     this.useMockData = process.env.REACT_APP_DEMO_MODE === 'true';
     this.backendTested = false;
     

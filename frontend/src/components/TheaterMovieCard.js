@@ -19,23 +19,43 @@ const TheaterMovieCard = ({ movie, theaters, selectedTheater, index }) => {
 
   const generateShowTimes = () => {
     const times = [];
-    const currentHour = new Date().getHours();
+    const now = new Date();
+    const currentHour = now.getHours();
     
     // Generate realistic show times
     const baseTimes = ['10:00 AM', '1:00 PM', '4:00 PM', '7:00 PM', '10:00 PM'];
     
     baseTimes.forEach(time => {
-      const [hour] = time.split(':');
-      const timeHour = parseInt(hour) + (time.includes('PM') && hour !== '12' ? 12 : 0);
+      const [hour, period] = time.split(' ');
+      const [hourNum] = hour.split(':');
+      let timeHour = parseInt(hourNum);
       
-      if (timeHour > currentHour) {
+      if (period === 'PM' && timeHour !== 12) {
+        timeHour += 12;
+      } else if (period === 'AM' && timeHour === 12) {
+        timeHour = 0;
+      }
+      
+      // If it's past current time, show for tomorrow or add buffer for today
+      if (timeHour > currentHour + 1) { // At least 1 hour in future
         times.push({
           time,
-          available: Math.random() > 0.3, // 70% chance of availability
+          available: Math.random() > 0.2, // 80% chance of availability
           price: Math.floor(Math.random() * 200) + 250 // ₹250-₹450 range
         });
       }
     });
+    
+    // If no shows today, add tomorrow's shows
+    if (times.length === 0) {
+      baseTimes.forEach(time => {
+        times.push({
+          time: `Tomorrow ${time}`,
+          available: Math.random() > 0.2,
+          price: Math.floor(Math.random() * 200) + 250
+        });
+      });
+    }
     
     return times;
   };
@@ -44,23 +64,12 @@ const TheaterMovieCard = ({ movie, theaters, selectedTheater, index }) => {
   const selectedTheaterData = theaters.find(t => t.id === selectedTheater);
 
   const handleBookTicket = (time) => {
-    toast.success(`Booking ${movie.title} at ${time.time}. Redirecting to seat selection...`);
+    toast.success(`Viewing showtimes for ${movie.title}...`);
     
-    // Store booking data in localStorage for the booking flow
-    const bookingData = {
-      movieId: movie.id,
-      movieTitle: movie.title,
-      theater: selectedTheaterData,
-      showTime: time.time,
-      price: time.price
-    };
-    
-    localStorage.setItem('currentBooking', JSON.stringify(bookingData));
-    
-    // Navigate to seat selection (you'll need to implement this route)
+    // Navigate to show details page instead of direct booking
     setTimeout(() => {
-      window.location.href = `/booking/seats/${movie.id}`;
-    }, 1500);
+      window.location.href = `/movies/${movie.id}/shows`;
+    }, 1000);
   };
 
   const formatDuration = (minutes) => {
