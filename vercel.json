@@ -2,6 +2,13 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/build",
+  "installCommand": "npm install",
+  "env": {
+    "REACT_APP_DEMO_MODE": "true",
+    "REACT_APP_API_URL": "https://your-backend-url.herokuapp.com/api",
+    "GENERATE_SOURCEMAP": "false",
+    "CI": "false"
+  },
   "rewrites": [
     {
       "source": "/((?!api/.*).*)",

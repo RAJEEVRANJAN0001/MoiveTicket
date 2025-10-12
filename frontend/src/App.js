@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -24,7 +25,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/movies" element={<Movies />} />
-            <Route path="/movies/:movieId/shows" element={<ShowDetails />} />
+            <Route path="/movies/:movieId/shows" element={
+              <ErrorBoundary>
+                <ShowDetails />
+              </ErrorBoundary>
+            } />
             <Route path="/api-test" element={<APITestPage />} />
             <Route path="/booking/seats/:movieId" element={<SeatBooking />} />
             <Route path="/booking/payment" element={<PaymentConfirmation />} />
