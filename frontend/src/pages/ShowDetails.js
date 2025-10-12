@@ -65,6 +65,30 @@ const ShowDetails = () => {
     setSelectedSeats(seats);
   };
 
+  const handleSeatBookingPage = () => {
+    if (!selectedShow) {
+      toast.error('Please select a show first');
+      return;
+    }
+
+    // Store booking data for the SeatBooking page
+    const bookingData = {
+      movieId: movie.id,
+      movieTitle: movie.title,
+      showId: selectedShow.id,
+      showTime: selectedShow.date_time,
+      theater: {
+        name: selectedShow.screen_name,
+        location: "Cinema Location",
+        totalSeats: selectedShow.total_seats
+      },
+      price: selectedShow.price
+    };
+    
+    localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+    navigate(`/booking/seats/${movie.id}`);
+  };
+
   const handleBooking = async () => {
     if (!selectedShow || selectedSeats.length === 0) {
       toast.error('Please select a show and at least one seat');
@@ -210,14 +234,26 @@ const ShowDetails = () => {
 
         {/* Multi-Seat Selection */}
         {selectedShow && (
-          <MultiSeatSelector
-            show={selectedShow}
-            movie={movie}
-            selectedSeats={selectedSeats}
-            onSeatsChange={handleSeatsSelect}
-            onBooking={handleBooking}
-            bookingLoading={bookingLoading}
-          />
+          <div className="space-y-6">
+            {/* Option to use dedicated seat booking page */}
+            <div className="text-center">
+              <button
+                onClick={handleSeatBookingPage}
+                className="btn-secondary mr-4"
+              >
+                Open Full Seat Map
+              </button>
+              <span className="text-gray-400 text-sm">or select seats below</span>
+            </div>
+            
+            <MultiSeatSelector
+              show={selectedShow}
+              selectedSeats={selectedSeats}
+              onSeatsChange={handleSeatsSelect}
+              onBooking={handleBooking}
+              isBookingLoading={bookingLoading}
+            />
+          </div>
         )}
       </motion.div>
     </div>

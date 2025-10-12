@@ -115,7 +115,7 @@ const MultiSeatSelector = ({
         
         {/* Seat Grid */}
         <div className="space-y-3 max-w-4xl mx-auto">
-          {seatLayout.map((row, rowIndex) => (
+          {seatLayout.map((rowData, rowIndex) => (
             <motion.div 
               key={rowIndex} 
               initial={{ opacity: 0, x: -20 }}
@@ -125,12 +125,12 @@ const MultiSeatSelector = ({
             >
               {/* Row Label */}
               <span className="w-8 text-sm text-gray-400 font-bold text-center">
-                {row[0]?.row}
+                {rowData.row}
               </span>
               
               {/* Seats */}
               <div className="flex space-x-1">
-                {row.map((seat) => {
+                {rowData.seats.map((seat) => {
                   const isBooked = seat.isBooked;
                   const isSelected = seat.isSelected;
                   const isSelectable = !isBooked && (isSelected || selectedSeats.length < seatCount);
@@ -163,7 +163,7 @@ const MultiSeatSelector = ({
               
               {/* Seat Numbers for Reference */}
               <span className="w-8 text-xs text-gray-500 text-center">
-                {row[0]?.number}-{row[row.length - 1]?.number}
+                {rowData.seats[0]?.seatNumber}-{rowData.seats[rowData.seats.length - 1]?.seatNumber}
               </span>
             </motion.div>
           ))}

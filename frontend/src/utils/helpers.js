@@ -74,7 +74,30 @@ export const formatAmount = (amount) => {
   return `₹${Math.round(inrAmount).toLocaleString('en-IN')}`;
 };
 
-export const generateSeatLayout = (rows = 10, seatsPerRow = 16) => {
+export const generateSeatLayout = (totalSeats = 160, bookedSeats = [], selectedSeats = []) => {
+  // If totalSeats is a simple number, calculate rows and seats per row
+  let rows, seatsPerRow;
+  
+  if (typeof totalSeats === 'number') {
+    // Calculate reasonable layout based on total seats
+    if (totalSeats <= 80) {
+      rows = 8;
+      seatsPerRow = Math.ceil(totalSeats / rows);
+    } else if (totalSeats <= 150) {
+      rows = 10;
+      seatsPerRow = Math.ceil(totalSeats / rows);
+    } else {
+      rows = 12;
+      seatsPerRow = Math.ceil(totalSeats / rows);
+    }
+  } else {
+    // Fallback for old usage
+    rows = totalSeats || 10;
+    seatsPerRow = bookedSeats || 16;
+    bookedSeats = selectedSeats || [];
+    selectedSeats = [];
+  }
+
   const layout = [];
   
   for (let row = 0; row < rows; row++) {
@@ -82,11 +105,18 @@ export const generateSeatLayout = (rows = 10, seatsPerRow = 16) => {
     const seats = [];
     
     for (let seat = 1; seat <= seatsPerRow; seat++) {
+      const seatId = `${rowLetter}${seat}`;
+      const isBooked = bookedSeats.includes(seatId);
+      const isSelected = selectedSeats.includes(seatId);
+      
       seats.push({
-        id: `${rowLetter}${seat}`,
+        number: seatId,
+        id: seatId,
         row: rowLetter,
-        number: seat,
-        status: Math.random() > 0.7 ? 'booked' : 'available', // 30% chance of being booked
+        seatNumber: seat,
+        isBooked,
+        isSelected,
+        status: isBooked ? 'booked' : 'available',
         price: row < 3 ? 250 : row < 7 ? 350 : 450, // Premium pricing in INR
       });
     }
@@ -111,5 +141,6 @@ export const calculateTotalPrice = (selectedSeats, defaultPrice = 250) => {
 };
 
 export const formatSeatNumbers = (seats) => {
-  return seats.map(seat => seat.id).join(', ');
+  if (!seats || seats.length === 0) return '';
+  return seats.map(seat => typeof seat === 'string' ? seat : seat.id || seat.number).join(', ');
 };
