@@ -31,7 +31,7 @@ This README focuses on how to run the project locally (backend + frontend), how 
 
 ## Prerequisites
 
-- Node.js and npm (for frontend)
+- react(frontend)
 - Python 3.10+ and pip (for backend)
 
 ## Local development — Backend (quick)
